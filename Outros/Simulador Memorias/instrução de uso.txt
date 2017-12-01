@@ -1,0 +1,15 @@
+Instruções de uso:
+
+// * Para os arquivos .cpp, utilizar a ferramenta DevC++ para leitura e //compilação dos programas.
+// * Para os arquivos .docx, utilizar a ferramenta Microsoft World para //visualização do relatorio.
+
+* Para uso do "Simulador Memoria Manual" :
+	- Abrir o programa.
+	- F11 para Compilar e Executar.
+	- Seguir o menu interno do programa.
+
+* Para uso do "Simulador Memoria Automatico" :
+	- Abrir o programa.
+	- F11 para Compilar e Executar.
+	- Pressione a tecla "ENTER" para utilização e visualização.
+	- Pressione devagar para aperfeiçoamento da randomização.

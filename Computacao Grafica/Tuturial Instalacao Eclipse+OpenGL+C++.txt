@@ -1,0 +1,143 @@
+Tuturial de como preparar um ambiente de programação em C/C++ no Eclipse e instalar o OpenGL
+Observação: todos links e locais a seguir foram acessados na data de 04/10/2017, caso algum não funcione, procure pelo nome e algo relacionado a url.
+
+0. Verificar se está instalado Java no seu computador, junto com a JDK e JRE.
+Caso tente executar o instalador do eclipse, e não tenha, ele ira te redirecionar para uma pagina de download.
+
+1. Baixe a versão mais atualizada do eclipse:
+https://www.eclipse.org/downloads/
+Versão baixada: Eclipse Oxygen (4.7.1) Release for Windows 64 bits
+
+2. Instale o MINGW de preferencia na pasta raiz (C:), após sua instalação, abrá o MinGW Installation Manager e marque as opções:
+Basic Setup -> Package | Class
+mingw-developer-toolkit | bin
+mingw32-base | bin
+mingw32-gcc-g++ | bin
+msys-base | bin
+All Packages -> Package | Class (Alguns já vão estar preenchidos ou preencher automatico, não mude)
+mingw32-automake | bin
+
+Após as seleções, clique em Installation->Apply Changes.
+Após as instalações adicione o diretório <MINGW_HOME>/bin à variável de ambiente PATH, caso o instalador não tenha feito isso.
+
+http://sourceforge.net/projects/mingw
+Versão baixada: MinGW  Last Update: 2017-09-09 Release for Windows 64 bits
+
+3. Com o Eclipse aberto e o MinGW instalado, é necessario intalar o CDT Plugin (C/C++).
+No Eclipse, clique em Help->Install New Software... e em 'Work with:' clique em [Add...]:
+Em Name, coloque algo como Eclipse CDT e em Location copei a url disponivel em p2 software repository do site http://www.eclipse.org/cdt/downloads.php
+(CDT 9.3.1 for Eclipse Oxygen->p2 software repository: http://download.eclipse.org/tools/cdt/releases/9.3)
+Após confirmar, aperte Enter para que a tela carregue e com as opções em tela, marque a opção:
+Name | Version
+CDT Main Features | ...
+
+Feito isto, reinicie o eclipse.
+
+4. Mudar o padrão de compilador do CDT para o MinGW
+Acesse no Eclipse: 
+Window->Preferences->C/C++->New C/C++ Project Wizard->MakefileProject
+Acesse a aba Builder Settings e desmarque a opção 'Use default build command', em 'Build command:' escreva: mingw32-make -f makefile
+Acesse a aba Behavior e marque a opção dentro de Workbench Build Behavior > 'Build on resource save (Auto build)'.
+
+5. Testando o ambiente... Crie um projeto em File->New->Project... Na pasta C/C++ escolhe o C/C++ Project.
+Escolha um template (C++) e clique em Next, escolha um nome (ComputacaoGrafica) e finalize.
+No Projeto, adicione com o botão direito sobre o projeto... New->Source File... Coloque o nome de main.cpp
+Escreva um codigo de hello world ou use o codigo abaixo:
+#include <stdio.h>
+
+int main( int argc, const char* argv[] )
+{
+printf( "\nHello World\n\n" );
+}
+
+Ainda com o botao direito sobre o projeto... New->File... Coloque o nome de makefile (sem extensão)
+Copie exclusivamente este codigo: (Verifique o caminho do MinGW e sua versão no makefile)
+main : main.o
+g++ -o main main.o -L C:\MinGW\lib\gcc\mingw32\6.3.0\include -lstdc++
+
+main.o : main.cpp
+g++ -ggdb -c main.cpp
+
+all :
+${MAKE} main
+
+clean :
+-del main.o
+
+Ainda com o botão direito no projeto... Build Targets->Create... em 'Target name:' digite: all e clique em OK.
+Ainda com o botão direito no projeto... Build Targets->Build... selecione o Target all e cclique em Build.
+
+Teste seu codigo do main, até o momento era para ter compilado sem nenhuma complicação, caso ocorra erro, rever os passos.
+
+6. Instalando as bibliotecas graficas...
+Descompacte o arquivo glut.zip que se encontra em anexo.
+
+Coloque os arquivos .h em <MinGW_HOME>\include\GL. 
+Os arquivos .a em <MinGW_HOME>\lib.
+Os .dll no Windows\System32 e Windows\SysWOW64.
+
+Feche e abra o eclipse novamente para realizar as auterações;
+
+Com o botão direito no projeto... Properties->C/C++ Build->Settings->MINGW C++ Linker->Libraries... em 'Libraries (-l)' clique no icone de Add... e adicione na ordem:
+glut32
+glu32
+opengl32
+winmm
+gdi32
+
+... em 'Library search path (-L):' adicione o caminho da pasta lib na raiz do MINGW:
+C:\MinGW\lib
+
+Agora na mesma tela, em GCC C++ Compiler->Includes... em 'Includes paths (-l):' clique no icone de Add... e adicione o caminho do include da pasta raiz:
+C:\MinGW\include
+
+Clique em Apply and Close e Fim.
+
+7. Testando...
+Antes de testar, você pode com o botão direito do mouse no projeto ir em Build Targets->Build, selecionar o all e dar outro build para sair erros da tela.
+Para realizar um teste simples, copie o codigo no lugar do codigo do main.cpp:
+
+/*
+ * main.cpp
+ *
+ *  Created on: 4 de out de 2017
+ *      Author: henrique.silva
+ */
+
+#include <windows.h>
+#include <gl/gl.h>
+#include <gl/glu.h>
+#include <gl/glut.h>
+
+void init(void);
+void display(void);
+
+int main(int argc, char **argv) {
+glutInit(&argc,argv);
+glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB);
+glutInitWindowSize(250,250);
+glutInitWindowPosition(100,200);
+glutCreateWindow("My First Glut/OpenGL Program");
+init();
+glutDisplayFunc(display);
+glutMainLoop();
+return 0;
+}
+
+void init(void) {
+glClearColor(0.0f ,0.0f ,0.0f ,0.0f);
+glColor3f(0.0f,0.0f,1.0f);
+glMatrixMode(GL_PROJECTION);
+glLoadIdentity();
+gluPerspective(45.0f,(GLfloat)250/(GLfloat)250,0.1f,100.0f);
+}
+
+void display(void) {
+glClear(GL_COLOR_BUFFER_BIT);
+glBegin(GL_TRIANGLES);
+glVertex3f( 0.0f, 1.0f, -10.0f);
+glVertex3f(-1.0f,-1.0f, -10.0f);
+glVertex3f( 1.0f,-1.0f, -10.0f);
+glEnd();
+glutSwapBuffers();
+}
